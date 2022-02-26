@@ -1,5 +1,5 @@
 {
-  "project": "postman",
-  "model": "cool model",
+  "project_id": "postman",
+  "model_id": "cool model",
   "token": "demo-token"
 }
