@@ -26,3 +26,16 @@ def load_auth():
         validate_env(token, 'SLATE_TOKEN')
 
         return project, model, token
+
+
+def assemble_base(base_route: str, route: str) -> str:
+    """
+    Simple utility to append two route strings
+
+    :param base_route: Base route like events.blankly.finance
+    :param route: Specific route like
+    :return: Appended strings as routes
+
+    TODO this can validate that it is a valid path
+    """
+    return base_route + route
