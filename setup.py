@@ -5,10 +5,17 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, './README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+"""
+Build Info:
+python3 -m build
+twine upload dist/*
+"""
+
+
 setup(
     name='blankly-slate',
     packages=find_packages(),
-    version='v1.0.9-beta',
+    version='v1.0.0-beta',
     license='mit',
     description='View, manage and share your model from any codebase with slate',
     long_description=long_description,
