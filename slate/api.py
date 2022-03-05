@@ -1,6 +1,6 @@
 import time
-
 import requests
+from slate.exceptions import APIException
 
 
 class API:
@@ -17,10 +17,10 @@ class API:
             'projectid': project_id,
             'modelid': model_id,
             'token': token,
-            'time': time.time()
+            'time': str(time.time())
         }
 
-        self.__api_url = 'https://events.blankly.finance'
+        self.__api_url = 'http://localhost'  # 'https://events.blankly.finance'
         self.__api_version = 'v1'
 
     def __assemble_route_components(self, components: list) -> str:
@@ -50,7 +50,22 @@ class API:
 
         :return: None
         """
-        self.__headers['time'] = time.time()
+        self.__headers['time'] = str(time.time())
+
+    @staticmethod
+    def __check_errors(response: requests.Response) -> dict:
+        # Check if the body is empty
+        if response.raw._body is None:
+            body = {}
+        else:
+            body = response.json()
+
+        # Now if there is an error in the non-empty body throw an error
+        # If not just return out
+        if 'error' in body:
+            raise APIException(body['error'])
+        else:
+            return body
 
     def post(self, route, data: dict) -> dict:
         """
@@ -61,7 +76,8 @@ class API:
         """
         route = self.__assemble_route(route)
         self.__update_time()
-        return requests.post(route, data=data, headers=self.__headers).json()
+        response = requests.post(route, data=data, headers=self.__headers)
+        return self.__check_errors(response)
 
     def get(self, route) -> dict:
         """
@@ -71,4 +87,4 @@ class API:
         """
         route = self.__assemble_route(route)
         self.__update_time()
-        return requests.get(route, headers=self.__headers).json()
+        return self.__check_errors(requests.get(route, headers=self.__headers))

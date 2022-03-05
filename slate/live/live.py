@@ -42,16 +42,22 @@ class Live:
             'annotation': annotation
         })
 
-    def spot_market(self, symbol: str, id_: str, side: str, exchange: str, size: [float, int] = None,
-                    funds: [float, int] = None, annotation: str = None) -> dict:
+    def spot_market(self,
+                    symbol: str,
+                    exchange: str,
+                    id_: str,
+                    side: str,
+                    size: [float, int] = None,
+                    funds: [float, int] = None,
+                    annotation: str = None) -> dict:
         """
         Post a market order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
 
         :param symbol: The symbol the order is under
+        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param id_: The exchange-given order id
         :param side: The side - 'buy' or 'sell'
-        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
@@ -67,17 +73,24 @@ class Live:
             'annotation': annotation
         })
 
-    def spot_limit(self, symbol: str, id_: str, side: str, exchange: str, price: [int, float],
-                   size: [float, int] = None, funds: [float, int] = None, annotation: str = None):
+    def spot_limit(self,
+                   symbol: str,
+                   exchange: str,
+                   id_: str,
+                   side: str,
+                   price: [int, float],
+                   size: [float, int] = None,
+                   funds: [float, int] = None,
+                   annotation: str = None):
         """
         Post a limit order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
 
         :param symbol: The symbol the order was placed on
+        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param id_: The exchange-generated order id
         :param side: The order side - 'buy' or 'sell'
         :param price: The limit order price
-        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
@@ -94,18 +107,26 @@ class Live:
             'annotation': annotation
         })
 
-    def spot_stop(self, symbol: str, id_: str, side: str, exchange: str, price: [int, float], activate: [int, float],
-                  size: [float, int] = None, funds: [float, int] = None, annotation: str = None):
+    def spot_stop(self,
+                  symbol: str,
+                  exchange: str,
+                  id_: str,
+                  side: str,
+                  price: [int, float],
+                  activate: [int, float],
+                  size: [float, int] = None,
+                  funds: [float, int] = None,
+                  annotation: str = None):
         """
         Post a limit order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
 
         :param symbol: The symbol the order was placed on
+        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param id_: The exchange-generated order id
         :param side: The order side - 'buy' or 'sell'
         :param price: The limit order price
         :param activate: The activation price of the stop order
-        :param exchange: The exchange the order was performed on - ex: 'coinbase_pro' or 'alpaca'
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order

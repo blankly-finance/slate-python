@@ -1,4 +1,5 @@
 import asyncio
+import time
 import typing
 
 import slate.utils as utils
@@ -57,3 +58,7 @@ class Slate:
         :return:
         """
         return callable_(**kwargs)
+
+    @property
+    def now(self):
+        return time.time()
