@@ -2,6 +2,7 @@ import json
 import warnings
 
 from slate.api import API
+from slate.utils import assemble_base
 
 
 class Live:
@@ -10,28 +11,18 @@ class Live:
         Initialize a new live instance
         :param api: The object containing the Blankly API
         """
-        self.__backtest_id = None
         self.__api: API = api
 
         self.__live_base = '/v1/live'
 
-    def update_backtest_id(self, new_backtest_id: str) -> None:
-        """
-        Update the backtest id for this instance
-
-        :param new_backtest_id: The new id to use
-        :return: None
-        """
-        self.__backtest_id = new_backtest_id
-
-    def __assemble_live_base(self, route: str) -> str:
+    def __assemble_base(self, route: str) -> str:
         """
         Assemble the sub-route specific to live posts
 
         :param route: The sub route: /spot-market -> /v1/live/spot-market
         :return: str
         """
-        return self.__live_base + route
+        return assemble_base(self.__live_base, route)
 
     def event(self, args: dict, response: dict, type_: str, annotation: str = None) -> dict:
         """
@@ -44,7 +35,7 @@ class Live:
         :param annotation: A human-friendly bit of text for your function
         :return: API Response
         """
-        return self.__api.post(self.__assemble_live_base('/event'), {
+        return self.__api.post(self.__assemble_base('/event'), {
             'args': args,
             'response': response,
             'type': type_,
@@ -66,7 +57,7 @@ class Live:
         :param annotation: An optional annotation to be given to this order
         :return: API response (dict)
         """
-        return self.__api.post(self.__assemble_live_base('/spot-market'), {
+        return self.__api.post(self.__assemble_base('/spot-market'), {
             'symbol': symbol,
             'id': id_,
             'side': side,
@@ -92,7 +83,7 @@ class Live:
         :param annotation: An optional annotation to be given to this order
         :return: API response (dict)
         """
-        return self.__api.post(self.__assemble_live_base('/spot-limit'), {
+        return self.__api.post(self.__assemble_base('/spot-limit'), {
             'symbol': symbol,
             'id': id_,
             'side': side,
@@ -120,7 +111,7 @@ class Live:
         :param annotation: An optional annotation to be given to this order
         :return: API response (dict)
         """
-        return self.__api.post(self.__assemble_live_base('/spot-limit'), {
+        return self.__api.post(self.__assemble_base('/spot-limit'), {
             'symbol': symbol,
             'id': id_,
             'side': side,
@@ -142,7 +133,7 @@ class Live:
         :return: API Response (dict)
         """
         kwargs['id'] = id_
-        return self.__api.post(self.__assemble_live_base('/update-trade'), kwargs)
+        return self.__api.post(self.__assemble_base('/update-trade'), kwargs)
 
     def update_annotation(self, id_: str, annotation: str) -> dict:
         """
@@ -153,7 +144,7 @@ class Live:
         :param annotation: A descriptor about the order
         :return: API Response (dict)
         """
-        return self.__api.post(self.__assemble_live_base('/update-annotation'), {
+        return self.__api.post(self.__assemble_base('/update-annotation'), {
             'id': id_,
             'annotation': annotation
         })
@@ -189,4 +180,18 @@ class Live:
         # Format to API spec
         result = {'result': result}
 
-        return self.__api.post(self.__assemble_live_base('/screener-result'), result)
+        return self.__api.post(self.__assemble_base('/screener-result'), result)
+
+    def log(self, line: str, type_: str) -> dict:
+        """
+        Post a new log from a live running model. This can be stdout or any custom logs
+        https://docs.blankly.finance/services/events#post-v1livelog
+
+        :param line: The line to write
+        :param type_: The type of line, common types include 'stdout' or 'stderr'
+        :return: API response (dict)
+        """
+        return self.__api.post('/log', {
+            'line': line,
+            'type': type_
+        })
