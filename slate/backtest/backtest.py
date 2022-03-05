@@ -2,7 +2,7 @@ from slate.api import API
 from slate.utils import assemble_base
 
 
-class Live:
+class Backtest:
     def __init__(self, api: API):
         """
         Initialize a new live instance
