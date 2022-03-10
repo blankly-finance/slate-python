@@ -21,11 +21,11 @@ class Model:
         """
         return assemble_base(self.__live_base, route)
 
-    def model_livecycle(self,
-                        message: str = None,
-                        start_at: [int, float] = None,
-                        end_at: [int, float] = None,
-                        running: bool = None) -> dict:
+    def set_lifecycle(self,
+                      message: str = None,
+                      start_at: [int, float] = None,
+                      end_at: [int, float] = None,
+                      running: bool = None) -> dict:
         """
         Update the model lifecycle
         All keys are optional so that any individual parameter can be updated
@@ -45,8 +45,8 @@ class Model:
         })
 
     # TODO add routes to remove the used symbols and exchanges
-    def used_symbol(self,
-                    symbol: str) -> dict:
+    def add_symbol(self,
+                   symbol: str) -> dict:
         """
         Add a used symbol for the live view to the platform
 
@@ -57,7 +57,7 @@ class Model:
             'symbol': symbol
         })
 
-    def used_exchange(self, used_exchange) -> dict:
+    def set_exchange(self, used_exchange) -> dict:
         """
         Add an exchange to the list of used exchanges to the platform
 
