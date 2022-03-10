@@ -10,7 +10,7 @@ def load_auth():
         slate_config = open('./slate.json')
         config = json.loads(slate_config.read())
 
-        return config['project_id'], config['model_id'], config['token']
+        return config['project_id'], config['model_id'], config['api_key'], config['api_pass']
     except FileNotFoundError:
         def validate_env(env, name):
             if env is None:
@@ -22,10 +22,13 @@ def load_auth():
         model = os.getenv('SLATE_MODEL_ID')
         validate_env(model, 'SLATE_MODEL_ID')
 
-        token = os.getenv('SLATE_TOKEN')
-        validate_env(token, 'SLATE_TOKEN')
+        api_key = os.getenv('SLATE_API_KEY')
+        validate_env(api_key, 'SLATE_API_KEY')
 
-        return project, model, token
+        api_pass = os.getenv('SLATE_API_PASS')
+        validate_env(api_pass, 'SLATE_API_PASS')
+
+        return project, model, api_key, api_pass
 
 
 def assemble_base(base_route: str, route: str) -> str:

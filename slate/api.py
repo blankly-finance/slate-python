@@ -4,23 +4,25 @@ from slate.exceptions import APIException
 
 
 class API:
-    def __init__(self, project_id, model_id, token):
+    def __init__(self, project_id, model_id, api_key, api_pass):
         """
         Initialize the lower API class to handle requests
 
         :param project_id: The project id to associate the model with
         :param model_id: The model id to associate the model with
-        :param token: The token to validate the model
+        :param api_key: The API key for this project
+        :param api_pass: The API pass for this project
         """
 
         self.__headers = {
-            'projectid': project_id,
-            'modelid': model_id,
-            'token': token,
-            'time': str(time.time())
+            'PROJECT_ID': project_id,
+            'MODEL_ID': model_id,
+            'API_KEY': api_key,
+            'API_PASS': api_pass,
+            'TIME': str(time.time())
         }
 
-        self.__api_url = 'http://localhost'  # 'https://events.blankly.finance'
+        self.__api_url = 'https://events.blankly.finance'
         self.__api_version = 'v1'
 
     def __assemble_route_components(self, components: list) -> str:

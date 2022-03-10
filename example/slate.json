@@ -1,5 +1,7 @@
 {
   "project_id": "postman",
   "model_id": "cool model",
-  "token": "demo-token"
+
+  "api_key": "demo-token",
+  "api_pass": "please"
 }
