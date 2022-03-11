@@ -18,9 +18,9 @@ class Slate:
         :param enable_async: Enable this to allow submission to the event loop
         """
 
-        self.project_id, self.model_id, self.__api_key, self.__api_pass = utils.load_auth()
+        self.model_id, self.__api_key, self.__api_pass = utils.load_auth()
 
-        self.__api = API(self.project_id, self.model_id, self.__api_key, self.__api_pass)
+        self.__api = API(self.model_id, self.__api_key, self.__api_pass)
 
         self.live = Live(self.__api)
         self.model = Model(self.__api)
