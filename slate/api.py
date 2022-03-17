@@ -20,6 +20,9 @@ class API:
             'time': str(time.time())
         }
 
+        # This is none for live but a datetime when set
+        self.time_setting = None
+
         self.__api_url = 'https://events.blankly.finance'
         self.__api_version = 'v1'
 
@@ -50,7 +53,10 @@ class API:
 
         :return: None
         """
-        self.__headers['time'] = str(time.time())
+        if self.time_setting is None:
+            self.__headers['time'] = str(time.time())
+        else:
+            self.__headers['time'] = str(self.time_setting.timestamp())
 
     @staticmethod
     def __check_errors(response: requests.Response) -> dict:

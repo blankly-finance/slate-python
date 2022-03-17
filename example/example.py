@@ -3,7 +3,7 @@ import uuid
 import slate
 
 if __name__ == "__main__":
-    slate = slate.Slate().model
+    slate = slate.Slate()
 
     # Tell the platform that the model is running
     slate.model.set_lifecycle(message='Running', start_at=slate.now, running=True)
