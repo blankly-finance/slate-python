@@ -1,3 +1,5 @@
+import datetime
+
 from slate.api import API
 from slate.utils import assemble_base
 
@@ -43,6 +45,7 @@ class Backtest:
                metrics: dict,
                backtest_id: str,
                indicators: dict,
+               time: datetime.datetime = None
                ) -> dict:
         """
         Post a backtest result object to the platform
@@ -59,15 +62,16 @@ class Backtest:
             'trades': trades,
             'metrics': metrics,
             'backtest_id': backtest_id,
-            'indicators': indicators
-        })
+            'indicators': indicators,
+        }, time)
 
     def status(self,
                successful: bool,
                status_summary: str,
                status_details: str,
                time_elapsed: [int, float],
-               backtest_id: str) -> dict:
+               backtest_id: str,
+               time: datetime.datetime = None) -> dict:
         """
         Post a backtest status. This is primarily used for backtest lifecycle
         https://docs.blankly.finance/services/events#post-v1livelog
@@ -77,6 +81,7 @@ class Backtest:
         :param status_details: A more extensive message about the backtest
         :param time_elapsed: The amount of time taken to start and run the backtest
         :param backtest_id: The identifier for the backtest
+        :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post(self.__assemble_base('/status'), {
@@ -85,9 +90,9 @@ class Backtest:
             'status_details': status_details,
             'time_elapsed': time_elapsed,
             'backtest_id': backtest_id
-        })
+        }, time)
 
-    def log(self, line: str, type_: str, backtest_id: str) -> dict:
+    def log(self, line: str, type_: str, backtest_id: str, time: datetime.datetime = None) -> dict:
         """
         Post a new log from a backtesting model. This can be stdout or any custom logs
         https://docs.blankly.finance/services/events#post-v1backtestlog
@@ -95,10 +100,11 @@ class Backtest:
         :param line: The line to write
         :param type_: The type of line, common types include 'stdout' or 'stderr'
         :param backtest_id: The identifier for the backtest
+        :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post('/log', {
             'line': line,
             'type': type_,
             'backtest_id': backtest_id
-        })
+        }, time)

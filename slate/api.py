@@ -1,3 +1,4 @@
+import copy
 import time
 import requests
 from slate.exceptions import APIException
@@ -47,16 +48,18 @@ class API:
         """
         return self.__api_url + route
 
-    def __update_time(self) -> None:
+    def __update_time(self, time_) -> dict:
         """
         Update the time in the headers
 
         :return: None
         """
-        if self.time_setting is None:
-            self.__headers['time'] = str(time.time())
+        headers = copy.copy(self.__headers)
+        if time_ is None:
+            headers['time'] = str(time.time())
         else:
-            self.__headers['time'] = str(self.time_setting.timestamp())
+            headers['time'] = str(self.time_setting.timestamp())
+        return headers
 
     @staticmethod
     def __check_errors(response: requests.Response) -> dict:
@@ -73,24 +76,26 @@ class API:
         else:
             return body
 
-    def post(self, route, data: dict) -> dict:
+    def post(self, route, data: dict, time_=None) -> dict:
         """
         Make a basic POST request at a route
         :param route: The route without the base /v1/backtest/status
         :param data: The data to post as a dictionary in the body
+        :param time_: A datetime to pass into the function
         :return: dict (exchange response)
         """
         route = self.__assemble_route(route)
-        self.__update_time()
-        response = requests.post(route, data=data, headers=self.__headers)
+        headers = self.__update_time(time_)
+        response = requests.post(route, data=data, headers=headers)
         return self.__check_errors(response)
 
-    def get(self, route) -> dict:
+    def get(self, route, time_=None) -> dict:
         """
         Make a basic GET request at the given route
         :param route: The route without the base /time
+        :param time_: A datetime to pass into the function
         :return: dict (the exchange response)
         """
         route = self.__assemble_route(route)
-        self.__update_time()
-        return self.__check_errors(requests.get(route, headers=self.__headers))
+        headers = self.__update_time(time_)
+        return self.__check_errors(requests.get(route, headers=headers))

@@ -1,3 +1,4 @@
+import datetime
 import json
 import warnings
 
@@ -24,7 +25,8 @@ class Live:
         """
         return assemble_base(self.__live_base, route)
 
-    def event(self, args: dict, response: dict, type_: str, annotation: str = None) -> dict:
+    def event(self, args: dict, response: dict, type_: str, annotation: str = None,
+              time: datetime.datetime = None) -> dict:
         """
         Post an event to the platform - generally used for annotating & viewing any important custom function calls
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
@@ -33,6 +35,7 @@ class Live:
         :param response: The (function) response
         :param type_: A custom type for the event like 'order' or 'check_price'
         :param annotation: A human-friendly bit of text for your function
+        :param time: A time object to fill if the event occurred in the past
         :return: API Response
         """
         return self.__api.post(self.__assemble_base('/event'), {
@@ -40,7 +43,7 @@ class Live:
             'response': response,
             'type': type_,
             'annotation': annotation
-        })
+        }, time)
 
     def spot_market(self,
                     symbol: str,
@@ -49,7 +52,8 @@ class Live:
                     side: str,
                     size: [float, int] = None,
                     funds: [float, int] = None,
-                    annotation: str = None) -> dict:
+                    annotation: str = None,
+                    time: datetime.datetime = None) -> dict:
         """
         Post a market order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
@@ -61,6 +65,7 @@ class Live:
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
+        :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post(self.__assemble_base('/spot-market'), {
@@ -71,7 +76,7 @@ class Live:
             'size': size,
             'funds': funds,
             'annotation': annotation
-        })
+        }, time)
 
     def spot_limit(self,
                    symbol: str,
@@ -81,7 +86,8 @@ class Live:
                    price: [int, float],
                    size: [float, int] = None,
                    funds: [float, int] = None,
-                   annotation: str = None):
+                   annotation: str = None,
+                   time: datetime.datetime = None):
         """
         Post a limit order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
@@ -94,6 +100,7 @@ class Live:
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
+        :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post(self.__assemble_base('/spot-limit'), {
@@ -105,7 +112,7 @@ class Live:
             'size': size,
             'funds': funds,
             'annotation': annotation
-        })
+        }, time)
 
     def spot_stop(self,
                   symbol: str,
@@ -116,7 +123,8 @@ class Live:
                   activate: [int, float],
                   size: [float, int] = None,
                   funds: [float, int] = None,
-                  annotation: str = None):
+                  annotation: str = None,
+                  time: datetime.datetime = None):
         """
         Post a limit order done on a spot exchange to the platform
         https://docs.blankly.finance/services/events/#post-v1liveupdate-trade
@@ -130,6 +138,7 @@ class Live:
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
+        :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post(self.__assemble_base('/spot-limit'), {
@@ -142,7 +151,7 @@ class Live:
             'size': size,
             'funds': funds,
             'annotation': annotation,
-        })
+        }, time)
 
     def update_trade(self, id_: str, **kwargs) -> dict:
         """
@@ -170,7 +179,7 @@ class Live:
             'annotation': annotation
         })
 
-    def screener_result(self, result: dict) -> dict:
+    def screener_result(self, result: dict, time_: datetime.datetime = None) -> dict:
         """
         Post a screener result to the platform
         https://docs.blankly.finance/services/events/#post-v1livescreener-result
@@ -187,6 +196,7 @@ class Live:
                     "buy_signal": false
                 }
             }
+        :param time_: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
 
@@ -201,18 +211,19 @@ class Live:
         # Format to API spec
         result = {'result': result}
 
-        return self.__api.post(self.__assemble_base('/screener-result'), result)
+        return self.__api.post(self.__assemble_base('/screener-result'), result, time_)
 
-    def log(self, line: str, type_: str) -> dict:
+    def log(self, line: str, type_: str, time_: datetime.datetime = None) -> dict:
         """
         Post a new log from a live running model. This can be stdout or any custom logs
         https://docs.blankly.finance/services/events#post-v1livelog
 
         :param line: The line to write
         :param type_: The type of line, common types include 'stdout' or 'stderr'
+        :param time_: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
         return self.__api.post('/log', {
             'line': line,
             'type': type_
-        })
+        }, time_)

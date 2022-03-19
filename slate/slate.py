@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import time
 import typing
 
@@ -34,15 +33,6 @@ class Slate:
         if enable_async:
             self.__event_loop = asyncio.get_event_loop()
             self.__event_loop.run_forever()
-
-    def set_global_time(self, new_time: datetime.datetime = None):
-        """
-        Set the global time for slate. This will mean that any API requests done with a time pushed into this setting
-        will be recorded at that time. If nothing is passed it will go back to using the live time
-        :param new_time: A datetime object containing the global time
-        :return: None
-        """
-        self.__api.time_setting = new_time
 
     def submit(self, callable_: typing.Callable, **kwargs):
         """
