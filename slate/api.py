@@ -76,7 +76,7 @@ class API:
         else:
             return body
 
-    def post(self, route, data: dict, time_=None) -> dict:
+    def post(self, route, data: dict, time_=None):
         """
         Make a basic POST request at a route
         :param route: The route without the base /v1/backtest/status
@@ -87,9 +87,9 @@ class API:
         route = self.__assemble_route(route)
         headers = self.__update_time(time_)
         response = requests.post(route, data=data, headers=headers)
-        return self.__check_errors(response)
+        return response  # self.__check_errors(response)
 
-    def get(self, route, time_=None) -> dict:
+    def get(self, route, time_=None):
         """
         Make a basic GET request at the given route
         :param route: The route without the base /time
@@ -98,4 +98,4 @@ class API:
         """
         route = self.__assemble_route(route)
         headers = self.__update_time(time_)
-        return self.__check_errors(requests.get(route, headers=headers))
+        return requests.get(route, headers=headers)

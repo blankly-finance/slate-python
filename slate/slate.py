@@ -11,14 +11,15 @@ from slate.backtest.backtest import Backtest
 
 
 class Slate:
-    def __init__(self, enable_async=False):
+    def __init__(self, model_id: str = None, enable_async=False):
         """
         Initialize a new slate instance
 
         :param enable_async: Enable this to allow submission to the event loop
         """
-
         self.model_id, self.__api_key, self.__api_pass = utils.load_auth()
+        if model_id is not None:
+            self.model_id = model_id
 
         self.__api = API(self.model_id, self.__api_key, self.__api_pass)
 
