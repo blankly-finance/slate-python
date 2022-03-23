@@ -1,6 +1,7 @@
 import copy
 import time
 import requests
+import json
 from slate.exceptions import APIException
 
 
@@ -24,7 +25,7 @@ class API:
         # This is none for live but a datetime when set
         self.time_setting = None
 
-        self.__api_url = 'https://events.blankly.finance'
+        self.__api_url = 'http://localhost'  # 'https://events.blankly.finance'
         self.__api_version = 'v1'
 
     def __assemble_route_components(self, components: list) -> str:
@@ -94,7 +95,7 @@ class API:
         route = self.__assemble_route(route)
         headers = self.__update_time(time_)
         response = requests.post(route, data=data, headers=headers, files=files_)
-        return response  # self.__check_errors(response)
+        return response
 
     def get(self, route, time_=None):
         """
