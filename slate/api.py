@@ -58,7 +58,7 @@ class API:
         if time_ is None:
             headers['time'] = str(time.time())
         else:
-            headers['time'] = str(self.time_setting.timestamp())
+            headers['time'] = str(time_.timestamp())
         return headers
 
     @staticmethod
@@ -76,17 +76,24 @@ class API:
         else:
             return body
 
-    def post(self, route, data: dict, time_=None):
+    def post(self, route, data: dict, time_=None, files_: dict = None):
         """
         Make a basic POST request at a route
         :param route: The route without the base /v1/backtest/status
         :param data: The data to post as a dictionary in the body
         :param time_: A datetime to pass into the function
+        :param files_: A dictionary containing key/values of files to file paths
         :return: dict (exchange response)
         """
+        if files_ is not None:
+            for i in files_:
+                files_[i] = open(files_[i], 'rb')
+        else:
+            files_ = {}
+
         route = self.__assemble_route(route)
         headers = self.__update_time(time_)
-        response = requests.post(route, data=data, headers=headers)
+        response = requests.post(route, data=data, headers=headers, files=files_)
         return response  # self.__check_errors(response)
 
     def get(self, route, time_=None):

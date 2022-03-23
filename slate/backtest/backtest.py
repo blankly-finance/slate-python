@@ -1,4 +1,6 @@
 import datetime
+import json
+import os
 
 from slate.api import API
 from slate.utils import assemble_base
@@ -53,6 +55,28 @@ class Backtest:
         **Look at this link to learn more**:
         https://docs.blankly.finance/services/events#post-v1backtestresult
         """
+        files = {}
+        if len(account_values) > 500:
+            import tempfile
+            account_values_json = {
+                'account_values': account_values
+            }
+            fd, path = tempfile.mkstemp()
+            open(path, 'w').write(json.dumps(account_values_json, indent=2))
+            os.close(fd)
+            files['account_values'] = path
+            account_values = None
+        if len(trades) > 500:
+            import tempfile
+            trades_json = {
+                'trades': trades
+            }
+            fd, path = tempfile.mkstemp()
+            open(path, 'w').write(json.dumps(trades_json, indent=2))
+            os.close(fd)
+            files['trades'] = path
+            trades = None
+
         return self.__api.post(self.__assemble_base('/result'), {
             'symbols': symbols,
             'quote_asset': quote_asset,
@@ -63,7 +87,7 @@ class Backtest:
             'metrics': metrics,
             'backtest_id': backtest_id,
             'indicators': indicators,
-        }, time)
+        }, time, files_=files)
 
     def status(self,
                successful: bool,
