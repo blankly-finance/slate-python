@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+from uuid import uuid4
 
 from slate.api import API
 from slate.utils import assemble_base
@@ -44,9 +45,9 @@ class Backtest:
                stop_time: [int, float],
                account_values: list,
                trades: list,
-               metrics: dict,
-               backtest_id: str,
-               indicators: dict,
+               backtest_id: str = None,
+               metrics: dict = {},
+               indicators: dict = {},
                time: datetime.datetime = None
                ) -> dict:
         """
@@ -55,6 +56,8 @@ class Backtest:
         **Look at this link to learn more**:
         https://docs.blankly.finance/services/events#post-v1backtestresult
         """
+        if backtest_id is None: # generate one if they don't input one
+            backtest_id = str(uuid4())
         data = {
             'symbols': symbols,
             'quote_asset': quote_asset,
