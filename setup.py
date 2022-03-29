@@ -23,7 +23,9 @@ setup(
     author='blankly',
     url='https://blankly.finance',
     install_requires=[
-        'requests'
+        'requests',
+        'pandas',
+        'numpy',
     ],
     classifiers=[
         # Possible: "3 - Alpha", "4 - Beta" or "5 - Production/Stable"

@@ -2,6 +2,8 @@ import datetime
 import json
 import os
 from uuid import uuid4
+import pandas as pd
+import numpy as np
 
 from slate.api import API
 from slate.utils import assemble_base
@@ -43,8 +45,8 @@ class Backtest:
                quote_asset: str,
                start_time: [int, float],
                stop_time: [int, float],
-               account_values: list,
-               trades: list,
+               account_values: [list, pd.Series, np.array],
+               trades: [list, pd.Series, np.array],
                backtest_id: str = None,
                metrics: dict = {},
                indicators: dict = {},
@@ -73,7 +75,7 @@ class Backtest:
         if len(account_values) > 0:
             import tempfile
             account_values_json = {
-                'account_values': account_values
+                'account_values': list(account_values)
             }
             fd, path = tempfile.mkstemp()
             open(path, 'w').write(json.dumps(account_values_json, indent=2))
@@ -83,7 +85,7 @@ class Backtest:
         if len(trades) > 0:
             import tempfile
             trades_json = {
-                'trades': trades
+                'trades': list(trades)
             }
             fd, path = tempfile.mkstemp()
             open(path, 'w').write(json.dumps(trades_json, indent=2))
