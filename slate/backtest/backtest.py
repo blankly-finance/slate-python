@@ -48,8 +48,8 @@ class Backtest:
                account_values: [list, pd.Series, np.array],
                trades: [list, pd.Series, np.array],
                backtest_id: str = None,
-               metrics: dict = {},
-               indicators: dict = {},
+               metrics: dict = None,
+               indicators: dict = None,
                time: datetime.datetime = None
                ) -> dict:
         """
