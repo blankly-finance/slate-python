@@ -43,10 +43,10 @@ class Backtest:
     def result(self,
                symbols: list,
                quote_asset: str,
-               start_time: [int, float],
-               stop_time: [int, float],
-               account_values: [list, pd.Series, np.array],
-               trades: [list, pd.Series, np.array],
+               start_time: [int, float, datetime.datetime],
+               stop_time: [int, float, datetime.datetime],
+               account_values: [list, pd.Series, np.ndarray],
+               trades: [list, pd.Series, np.ndarray],
                backtest_id: str = None,
                metrics: dict = None,
                indicators: dict = None,
@@ -58,8 +58,25 @@ class Backtest:
         **Look at this link to learn more**:
         https://docs.blankly.finance/services/events#post-v1backtestresult
         """
-        if backtest_id is None: # generate one if they don't input one
+        if backtest_id is None:  # generate one if they don't input one
             backtest_id = str(uuid4())
+
+        # Convert any ndarray
+        if isinstance(account_values, np.ndarray):
+            account_values = account_values.tolist()
+        if isinstance(trades, np.ndarray):
+            trades = trades.tolist()
+
+        if isinstance(account_values, pd.Series):
+            account_values = account_values.tolist()
+        if isinstance(trades, pd.Series):
+            trades = trades.tolist()
+
+        if isinstance(start_time, datetime.datetime):
+            start_time = start_time.timestamp()
+        if isinstance(stop_time, datetime.datetime):
+            stop_time = stop_time.timestamp()
+
         data = {
             'symbols': symbols,
             'quote_asset': quote_asset,
@@ -75,7 +92,7 @@ class Backtest:
         if len(account_values) > 0:
             import tempfile
             account_values_json = {
-                'account_values': list(account_values)
+                'account_values': account_values
             }
             fd, path = tempfile.mkstemp()
             open(path, 'w').write(json.dumps(account_values_json, indent=2))
@@ -85,7 +102,7 @@ class Backtest:
         if len(trades) > 0:
             import tempfile
             trades_json = {
-                'trades': list(trades)
+                'trades': trades
             }
             fd, path = tempfile.mkstemp()
             open(path, 'w').write(json.dumps(trades_json, indent=2))
