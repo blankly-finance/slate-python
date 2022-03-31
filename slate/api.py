@@ -1,7 +1,6 @@
 import copy
 import time
 import requests
-import json
 from slate.exceptions import APIException
 
 

@@ -101,6 +101,8 @@ class Backtest:
                status_details: str,
                time_elapsed: [int, float],
                backtest_id: str,
+               description: str = None,
+               label: str = None,
                time: datetime.datetime = None) -> dict:
         """
         Post a backtest status. This is primarily used for backtest lifecycle
@@ -112,6 +114,8 @@ class Backtest:
         :param time_elapsed: The amount of time taken to start and run the backtest
         :param backtest_id: The identifier for the backtest
         :param time: A time object to fill if the event occurred in the past
+        :param description: Post or overwrite the backtest description
+        :param label: Add a label to your backtest. Should be short.
         :return: API response (dict)
         """
         return self.__api.post(self.__assemble_base('/status'), {
@@ -119,7 +123,9 @@ class Backtest:
             'status_summary': status_summary,
             'status_details': status_details,
             'time_elapsed': time_elapsed,
-            'backtest_id': backtest_id
+            'backtest_id': backtest_id,
+            'description': description,
+            'label': label
         }, time)
 
     def log(self, line: str, type_: str, backtest_id: str, time: datetime.datetime = None) -> dict:
