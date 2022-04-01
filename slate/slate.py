@@ -5,6 +5,7 @@ import typing
 import slate.utils as utils
 from slate.api import API
 
+from slate.integrations import Integrations
 from slate.live.live import Live
 from slate.model.model import Model
 from slate.backtest.backtest import Backtest
@@ -26,6 +27,7 @@ class Slate:
         self.live = Live(self.__api)
         self.model = Model(self.__api)
         self.backtest = Backtest(self.__api)
+        self.integrations = Integrations(self, self.__api)
 
         self.__settings = {
             'enable_async': enable_async
