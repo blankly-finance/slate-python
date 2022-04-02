@@ -4,7 +4,7 @@ import pandas as pd
 from backtesting._stats import _Stats
 
 import slate
-from slate.integrations.common import b_id
+from slate.integrations.common import b_id, DUMMY_METRICS, DUMMY_INDICATORS
 
 try:
     import backtesting
@@ -25,30 +25,20 @@ class BacktestingPy:
         symbol = symbol or 'Unknown'
         quote = symbol.split('-')[1] if '-' in symbol else 'USD'
 
-        trades = [trade
-                  for idx, row in result['_trades'].iterrows()
-                  for trade in map_trades(symbol, row)]
-        trades.sort(key=itemgetter('time'))
+        trades = result['_trades'] \
+            .apply(map_trades, axis=1, result_type='expand', symbol=symbol) \
+            .unstack() \
+            .reset_index(drop=True) \
+            .apply(pd.Series) \
+            .sort_values('time', ascending=True) \
+            .to_dict('records')
 
-        account_values = result['_equity_curve']['Equity']
-        account_values = account_values.loc[account_values.shift() != account_values]
-        account_values = [{'time': time.timestamp(),
-                           'value': value}
-                          for time, value in account_values.items()]
-
-        # events api does this for us. oops!
-        # metrics_key_map = {'Return [%]': 'cum_returns',
-        #                    'Return (Ann.) [%]': 'cagr',
-        #                    'Volatility (Ann.) [%]': 'volatility',
-        #                    'Sharpe Ratio': 'sharpe',
-        #                    'Sortino Ratio': 'sortino',
-        #                    'Calmar Ratio': 'calmar',
-        #                    'Max. Drawdown [%]': 'max_drawdown'}
-        #
-        # metrics = {blankly_key: {'value': result[metrics_key],
-        #                          'display_name': metrics_key,
-        #                          'type': 'percent' if '%' in metrics_key else 'ratio'}
-        #            for metrics_key, blankly_key in metrics_key_map.items()}
+        equity = result['_equity_curve']['Equity']
+        account_values = equity.loc[equity.shift() != equity] \
+            .reset_index() \
+            .rename(columns={'index': 'time', 'Equity': 'value'})
+        account_values['time'] = account_values['time'].map(lambda t: t.timestamp())
+        account_values = account_values.to_dict('records')
 
         id = b_id()
         self.slate.backtest.result(symbols=[symbol],
@@ -58,8 +48,8 @@ class BacktestingPy:
                                    account_values=account_values,
                                    trades=trades,
                                    backtest_id=id,
-                                   metrics=[],
-                                   indicators=[])
+                                   metrics=DUMMY_INDICATORS,
+                                   indicators=DUMMY_METRICS)
 
         self.slate.backtest.status(backtest_id=id,
                                    successful=True,
@@ -68,17 +58,19 @@ class BacktestingPy:
                                    time_elapsed=0)
 
 
-def map_trades(symbol: str, row: pd.Series) -> list:
+def map_trades(row: pd.Series, symbol: str) -> list:
     common = {'symbol': symbol,
               'size': abs(row['Size']),
-              'type': 'market', }
-    entry = {**common, 'side': 'buy' if row['Size'] > 0 else 'sell',
-             'id': b_id(),
+              'type': 'market'}
+    entry = {**common,
              'time': row['EntryTime'].timestamp(),
+             'side': 'buy' if row['Size'] > 0 else 'sell',
+             'id': b_id(),
              'price': row['EntryPrice']}
-    exit = {**common, 'side': 'sell' if row['Size'] > 0 else 'buy',
-            'id': b_id(),
+    exit = {**common,
             'time': row['ExitTime'].timestamp(),
+            'side': 'sell' if row['Size'] > 0 else 'buy',
+            'id': b_id(),
             'price': row['ExitPrice']}
     return [entry, exit]
 
