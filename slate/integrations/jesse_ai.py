@@ -1,4 +1,8 @@
+import json
+from operator import itemgetter
+
 import slate
+from slate.integrations.common import b_id, DUMMY_METRICS, DUMMY_INDICATORS
 
 try:
     import jesse
@@ -14,63 +18,67 @@ class JesseAi:
         self.slate = slate
         self.api = api
 
-    def post_backtest(self, result):
-        raise NotImplementedError
+    def post_backtest(self, json_result: str):
+        with open(json_result, 'r') as file:
+            trades = json.load(file)['trades']
+
+        trades = [trade for j_trade in trades for trade in map_trades(j_trade)]
+        trades.sort(key=itemgetter('time'))
+
+        account_values = []
+        current_value = 0
+        for trade in trades:
+            if 'PNL' in trade:
+                current_value += trade['PNL']
+                account_values.append({
+                    'time': trade['time'],
+                    'value': current_value
+                })
+
+        symbols = list({trade['symbol'] for trade in trades})
+        quote_asset = symbols[0].split('-')[1] if '-' in symbols[0] else 'USD'
+        start = trades[0]['time']
+        end = trades[-1]['time']
+        id = b_id()
+
+        self.slate.backtest.result(symbols=symbols,
+                                   quote_asset=quote_asset,
+                                   start_time=start,
+                                   stop_time=end,
+                                   account_values=account_values,
+                                   trades=trades,
+                                   backtest_id=id,
+                                   metrics=DUMMY_INDICATORS,
+                                   indicators=DUMMY_METRICS)
+
+        self.slate.backtest.status(backtest_id=id,
+                                   successful=True,
+                                   status_summary='Completed',
+                                   status_details='',
+                                   time_elapsed=0)
+
+
+def map_trades(trade):
+    common = {
+        'symbol': trade['symbol'],
+        'size': trade['size'],
+        'type': 'market'
+    }
+    open = {**common,
+            'time': trade['opened_at'],
+            'side': 'buy' if trade['type'] == 'long' else 'sell',
+            'price': trade['entry_price'],
+            'id': b_id()}
+    close = {**common,
+             'time': trade['closed_at'],
+             'side': 'sell' if trade['type'] == 'long' else 'buy',
+             'price': trade['exit_price'],
+             'id': b_id(),
+             'PNL': trade['PNL']}  # used to calculate account values
+    return [open, close]
 
 
 if __name__ == '__main__':
-    # run jesse.ai backtest
-    import jesse.helpers as jh
-    from jesse.strategies import Strategy
-    from jesse import utils
-    from jesse.research import backtest, candles_from_close_prices
-
-    prices01 = [10, 11, 12, 12, 11, 13, 14, 12, 11, 15]
-    fake_candles01 = candles_from_close_prices(prices01)
-
-
-    class ResearchStrategy(Strategy):
-        def should_long(self):
-            return True
-
-        def should_short(self):
-            return False
-
-        def should_cancel(self):
-            return True
-
-        def go_long(self):
-            entry_price = self.price
-            qty = utils.size_to_qty(self.capital * 0.5, entry_price)
-            self.buy = qty, entry_price
-
-        def go_short(self):
-            pass
-
-
-    exchange_name = 'Fake Exchange'
-    symbol = 'BTC-USDT'
-    timeframe = '1m'
-    config = {'starting_balance': 10_000,
-              'fee': 0,
-              'futures_leverage': 2,
-              'futures_leverage_mode': 'cross',
-              'exchange': exchange_name,
-              'settlement_currency': 'USDT',
-              'warm_up_candles': 0}
-    routes = [{'exchange': exchange_name,
-               'strategy': ResearchStrategy,
-               'symbol': symbol,
-               'timeframe': timeframe}]
-    extra_routes = []
-    candles = {
-        jh.key(exchange_name, symbol): {'exchange': exchange_name,
-                                        'symbol': symbol,
-                                        'candles': fake_candles01}
-    }
-
-    result = backtest(config, routes, extra_routes, candles)
-
-    # post to slate
+    # post jesse-ai backtest to slate
     slate = slate.Slate()
-    slate.integrations.jesse.post_backtest(result)
+    slate.integrations.jesse.post_backtest('backtest.json')
