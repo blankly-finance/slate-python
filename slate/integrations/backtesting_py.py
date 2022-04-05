@@ -1,7 +1,6 @@
 from operator import itemgetter
 
 import pandas as pd
-from backtesting._stats import _Stats
 
 import slate
 from slate.integrations.common import b_id, DUMMY_METRICS, DUMMY_INDICATORS
