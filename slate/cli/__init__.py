@@ -105,7 +105,7 @@ def slate_init(args):
     if dir_is_empty:
         script_path = './main.py'
     else:
-        script_path = questionary.path('What is the path the main script or entry point?').unsafe_ask()
+        script_path = questionary.path('What is the main script or entry point? (ex: main.py, bot.py)').unsafe_ask()
 
     with show_spinner('Generating files') as spinner:
         files = [
@@ -204,10 +204,10 @@ def get_model_interactive(api):
         teams = api.list_teams()
         team_id = None
         if teams:
-            team_choices = [Choice('Create on my personal account', None)] \
+            team_choices = [Choice('Create on my personal account', False)] \
                            + [Choice(team.get('name', team['id']), team['id']) for team in teams]
             team_id = select('What team would you like to create this model under?', team_choices).unsafe_ask()
-            return create_model(api, name, description, 'strategy', team_id)
+            return create_model(api, name, description, 'strategy', team_id or None)
 
     with show_spinner('Loading models...') as spinner:
         models = api.list_all_models()

@@ -19,7 +19,6 @@
 import json
 
 import requests
-from blankly.utils.utils import info_print
 
 blankly_deployment_url = 'https://deploy.blankly.finance'
 
@@ -87,7 +86,7 @@ class API:
         # Show info that the request was not authorized but still
         #  allow the process to continue
         if out.status_code == 401:
-            info_print("Unauthorized request.")
+            print("Unauthorized request.")
 
         try:
             return out.json()
@@ -197,7 +196,7 @@ class API:
 
 
 if __name__ == '__main__':
-    from slate import cli
+    from blankly.deployment import new_cli as cli
     import code
 
     api = cli.ensure_login()
