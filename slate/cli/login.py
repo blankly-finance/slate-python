@@ -26,8 +26,10 @@ from typing import Optional
 from slate.cli.api import API
 from slate.cli.ui import print_work, print_failure, print_success, show_spinner
 
-SUCCESS_URL = 'https://firebasestorage.googleapis.com/v0/b/blankly-6ada5.appspot.com/o/login_success.html?alt=media&token=41d734e2-0a88-44c4-b1dd-7e081fd019e7'
-FAILURE_URL = 'https://firebasestorage.googleapis.com/v0/b/blankly-6ada5.appspot.com/o/login_failure.html?alt=media&token=b2d9f6dc-aa54-4da2-aa6f-1f75a4025634'
+SUCCESS_URL = 'https://firebasestorage.googleapis.com/v0/b/blankly-6ada5.appspot.com/o/login_success.html?alt=media' \
+              '&token=41d734e2-0a88-44c4-b1dd-7e081fd019e7'
+FAILURE_URL = 'https://firebasestorage.googleapis.com/v0/b/blankly-6ada5.appspot.com/o/login_failure.html?alt=media' \
+              '&token=b2d9f6dc-aa54-4da2-aa6f-1f75a4025634'
 
 
 

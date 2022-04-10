@@ -2,7 +2,6 @@ import os
 import tempfile
 import sys
 import zipfile
-from typing import List
 
 
 def get_python_version():
