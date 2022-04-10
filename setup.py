@@ -22,7 +22,10 @@ setup(
     long_description_content_type='text/markdown',
     author='blankly',
     url='https://blankly.finance',
+    entry_points={'console_scripts': ['slate = slate.cli:main']},
     install_requires=[
+        'questionary >= 1.10.0',
+        'yaspin >= 2.1.0',
         'requests',
         'pandas',
         'numpy',
