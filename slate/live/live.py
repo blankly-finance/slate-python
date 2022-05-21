@@ -45,6 +45,29 @@ class Live:
             'annotation': annotation
         }, time)
 
+    def set_pnl(self, pnl_values: list) -> dict:
+        """
+        Submit a set of PNL values to the platform. This will overwrite any existing PNL
+
+        :param pnl_values: An array of pnl values formatted [{time: 1651647605, value: 10},
+         {time: 1651647605, value: 10}]
+         :return: API Response
+        """
+        return self.__api.post(self.__assemble_base('/set-pnl'), {
+            'values': pnl_values
+        })
+
+    def set_auto_pnl(self, setting: bool) -> dict:
+        """
+        Enable or disable blankly's auto PNL on your trades
+
+        :param setting: True to enable auto PNL, False to disable
+        :return: API response
+        """
+        return self.__api.post(self.__assemble_base('/auto-pnl'), {
+            'enabled': setting
+        })
+
     def spot_market(self,
                     symbol: str,
                     exchange: str,
