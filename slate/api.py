@@ -24,7 +24,7 @@ class API:
         # This is none for live but a datetime when set
         self.time_setting = None
 
-        self.__api_url = 'http://localhost'  # 'https://events.blankly.finance'
+        self.__api_url = 'https://events.blankly.finance'
         self.__api_version = 'v1'
 
     def __assemble_route_components(self, components: list) -> str:
