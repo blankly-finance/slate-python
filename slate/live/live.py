@@ -54,7 +54,7 @@ class Live:
          :return: API Response
         """
         return self.__api.post(self.__assemble_base('/set-pnl'), {
-            'values': pnl_values
+            'values': json.dumps(pnl_values)
         })
 
     def set_auto_pnl(self, setting: bool) -> dict:
