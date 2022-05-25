@@ -57,6 +57,27 @@ class Live:
             'values': json.dumps(pnl_values)
         })
 
+    def set_custom_metric(self, name: str, value: float, display_name: str, type_: str = 'number'):
+        """
+        Set custom metrics on the platform. These will appear under "custom" in the dropdown
+
+        :param name: The string identifying the metric. This must be unique with all other metrics (will not be
+         displayed)
+        :param value: The value to be displayed
+        :param display_name: The display name. This will appear on the platform above the metric
+        :param type_: Set display type, this can be "number" or "percentage"
+        :return: API Response
+        """
+        body = {name: {
+            'value': value,
+            'display_name': display_name,
+            'type': type_
+        }}
+
+        return self.__api.post(self.__assemble_base('/set-custom-metric'), {
+            'metrics': json.dumps(body)
+        })
+
     def set_auto_pnl(self, setting: bool) -> dict:
         """
         Enable or disable blankly's auto PNL on your trades
