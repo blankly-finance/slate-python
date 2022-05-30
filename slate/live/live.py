@@ -131,6 +131,9 @@ class Live:
                    size: [float, int] = None,
                    funds: [float, int] = None,
                    annotation: str = None,
+                   executed_time: datetime.datetime = None,
+                   canceled_time: datetime.datetime = None,
+                   status: datetime.datetime = None,
                    time: datetime.datetime = None):
         """
         Post a limit order done on a spot exchange to the platform
@@ -144,9 +147,21 @@ class Live:
         :param size: Mutually exclusive with funds - if you place an order priced in the base asset
         :param funds: Mutually exclusive with size - if you place an order priced in the quote asset
         :param annotation: An optional annotation to be given to this order
+        :param executed_time: Optional datetime with when the order executed - mutually exclusive with canceled and
+         status
+        :param canceled_time: Optional datetime with when the order was canceled - mutually exclusive with executed and
+         status
+        :param status: If the order is still open, fill status with its status - mutually exclusive with executed and
+         status
         :param time: A time object to fill if the event occurred in the past
         :return: API response (dict)
         """
+        if executed_time is not None:
+            executed_time = int(executed_time.timestamp())
+
+        if canceled_time is not None:
+            canceled_time = int(canceled_time.timestamp())
+
         return self.__api.post(self.__assemble_base('/spot-limit'), {
             'symbol': symbol,
             'id': id_,
@@ -155,7 +170,10 @@ class Live:
             'price': price,
             'size': size,
             'funds': funds,
-            'annotation': annotation
+            'annotation': annotation,
+            'executed_time': executed_time,
+            'canceled_time': canceled_time,
+            'status': status
         }, time)
 
     def spot_stop(self,
