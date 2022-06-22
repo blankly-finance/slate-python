@@ -19,7 +19,7 @@ class BacktestingPy:
         self.slate = slate
         self.api = api
 
-    def post_backtest(self, result: 'backtesting.Backtest', symbol: str = None):
+    def post_backtest(self, result: 'backtesting.Backtest', symbol: str, exchange: str):
         self.slate.model.add_symbol(symbol)
         symbol = symbol or 'Unknown'
         quote = symbol.split('-')[1] if '-' in symbol else 'USD'
@@ -42,6 +42,7 @@ class BacktestingPy:
         id = b_id()
         self.slate.backtest.result(symbols=[symbol],
                                    quote_asset=quote,
+                                   exchange=exchange,
                                    start_time=result['Start'].timestamp(),
                                    stop_time=result['End'].timestamp(),
                                    account_values=account_values,
@@ -104,4 +105,4 @@ if __name__ == '__main__':
 
     # post to slate
     slate = slate.Slate()
-    slate.integrations.backtesting.post_backtest(result, 'GOOG')
+    slate.integrations.backtesting.post_backtest(result, 'GOOG', 'alpaca')
