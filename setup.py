@@ -15,7 +15,7 @@ twine upload dist/*
 setup(
     name='blankly-slate',
     packages=find_packages(),
-    version='v1.10.5-beta',
+    version='v1.10.6-beta',
     license='mit',
     description='View, manage and share your model from any codebase with slate',
     long_description=long_description,
